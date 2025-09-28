@@ -1,0 +1,5 @@
+<program> ::= <statement>*
+<statement> ::= <deposit> | <withdraw> | <check_balance>
+<deposit> ::= "deposit" <account_number> <amount>
+<withdraw> ::= "withdraw" <account_number> <amount>
+<check_balance> ::= "check_balance" <account_number>
