@@ -31,7 +31,6 @@ def main():
 
     running = True
     while running:
-        # Placeholder menu
         print("Banking menu will go here")
         running = False
 
