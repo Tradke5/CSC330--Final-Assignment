@@ -24,7 +24,6 @@ class BankAccount:
 
 
 def main():
-    # Example accounts
     accounts = [
         BankAccount("Tyson", "Radke", "TR123456", 1000),
         BankAccount("Dan", "Obermiller", "DO654321", 500)
