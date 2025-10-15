@@ -1,3 +1,4 @@
+
 from enum import Enum;
 import re;
 
@@ -7,6 +8,7 @@ def main():
     tokens = Lexer.GetTokens(input);
     try:
         tokens = Lexer.GetTokens(input);
+        code = Parser.Parse(tokens);
  #       program = Parse(tokens);
  #       rez = program.TopExpression.Evaluate();
  #       Console.WriteLine(rez + Environment.NewLine);
@@ -110,8 +112,85 @@ class Lexer:
             
     
 class Parser:
+    current = None;
+
+    def Parse(tokens):
+        node = ASTNode();
+        statementList = [];
+
+        for token in tokens:
+            if token.type == Token.CREATE:
+                current = Create();
+            elif type(current) is Create:
+                if token.type == Token.FNAME:
+                    current.firstName = token.value;
+                elif token.type == Token.LNAME:
+                    current.lastName = token.value;
+                elif token.type == Token.ACCNUMBER:
+                    current.accNumber = token.value;
+                elif token.type == Token.NUMBER:
+                    current.balance = token.value;
+                    statementList.append(current);
+                    current = None;
+            elif token.type == Token.ENTER:
+                current = Enter();
+            elif type(current) is Enter:
+                if token.type == Token.ACCNUMBER:
+                    current.accNumber = token.value;
+                    statementList.append(current);
+                    current = None;
+            elif token.type == Token.EXIT:
+                current = Exit();
+                statementList.append(current);
+                current = None;
+            elif token.type == Token.DEPOSIT:
+                current = Deposit();
+            elif type(current) is Deposit:
+                if token.type == Token.NUMBER:
+                    current.value = token.value;
+                    statementList.append(current);
+                    current = None;
+            elif token.type == Token.WITHDRAW:
+                current = Withdraw();
+            elif type(current) is Withdraw:
+                if token.type == Token.NUMBER:
+                    current.value = token.value;
+                    statementList.append(current);
+                    current = None;
+            elif token.type == Token.BALANCE:
+                current = Balance();
+                statementList.append(current);
+                current = None;
+        return statementList
+                    
+                
+
+class Create:
     def __init__(self):
-        print(1);
+        firstName = None;
+        lastName = None;
+        accNumber = None;
+        balance = None;
+
+class Balance:
+    def __init__(self):
+        value = None;
+
+class Withdraw:
+    def __init__(self):
+        value = None;
+
+class Deposit:
+    def __init__(self):
+        value = None;
+
+class Exit:
+    def __init__(self):
+        value = None;
+
+class Enter:
+    def __init__(self):
+        accNumber = None;
     
 class Token(Enum):
 
