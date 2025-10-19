@@ -1,8 +1,10 @@
 <program> ::= <statement>* ;
-<statement> ::= <deposit> | <withdraw> | <check_balance> ;
-<deposit> ::= "deposit" <account_number> <amount> ;
-<withdraw> ::= "withdraw" <account_number> <amount> ;
-<check_balance> ::= "check_balance" <account_number> ;
+<statement> ::= <deposit> | <withdraw> | <check_balance> | <create> | <exit> | <enter>;
+<enter> ::= "enter" , <account_number> ;
+<create> ::= "create" , <first_name>, <last_name> , <account_number> , <balance> ;
+<deposit> ::= "deposit" <amount> ;
+<withdraw> ::= "withdraw" <amount> ;
+<check_balance> ::= "balance" ;
 <first_name> ::= <letter> , {<letter>} ;
 <last_name> ::= <letter> , {<letter>} ;
 <account_number> ::= <letter> * 2, <digit> * 6 ;  //For account number, the first two letters must be the first letters in first_name and last_name
