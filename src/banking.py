@@ -6,7 +6,8 @@
 # We pledge that all work in this program is our own and not obtained from anyone or any other source.
 
 # References:
-#
+# Fowler, Martin. "Domain-Specific Languages Guide." 28 August, 2019, https://martinfowler.com/dsl.html.
+# Tomassetti, Gabriele. "Parsing In Python: Tools And Libraries." Strumenta, https://tomassetti.me/parsing-in-python/.
 
 
 from enum import Enum;
@@ -17,7 +18,8 @@ def main():
     # Preinput allows for the entering of any banking code before the program enters the while loop
     preInput = ["create Dan Obermiller DO300200 500", "create Tyson Radke TR500900 400"];
     # Run the interpreter using this preinput
-    Interpreter.run(preInput);
+    interpreter = Interpreter();
+    interpreter.run(preInput);
     
 ########################
 ##### BANK ACCOUNT #####
@@ -42,6 +44,7 @@ class BankAccount:
         # If user has enough money, then proceed with withdrawal. Otherwise, don't do it
         if (self.balance >= valFloat):
             self.balance -= valFloat;
+            print(f"${valFloat} successfully withdrawn from {self.firstName}'s account.");
         else:
             print("Could not withdraw that amount.");
 
@@ -155,12 +158,16 @@ class Lexer:
         # If line doesn't match any correct syntax, raise an error.
         if not tokenList:
             raise("Unable to process input.");
+        Lexer.printTokens(tokenList);
         return tokenList;
 
+    def printTokens(tokenList):
+        for token in tokenList:
+            print(f"Type: {token.getType()}");
+            print(f"Value: {token.getValue()}");
+            print(f"Position: {token.getPosition()}");
+            print();
 
-
-
-                
 
 ##################
 ##### PARSER #####
@@ -224,6 +231,7 @@ class Parser:
                     current.value = token.value;
                     node.addStatement(current);
                     current = None;
+        print(node.printStatementList());
         # Return AST Node
         return node.getStatementList();
                     
@@ -239,25 +247,43 @@ class Create:
         accNumber = None;
         balance = None;
 
+    def __str__(self):
+        return f"Create Object - First Name: {self.firstName}, Last Name: {self.lastName}, Account Number: {self.accNumber}, Balance: {self.balance}";
+
 class Balance:
     def __init__(self):
         value = None;
+
+    def __str__(self):
+        return f"Balance Object";
 
 class Withdraw:
     def __init__(self):
         value = None;
 
+    def __str__(self):
+        return f"Withdraw Object - Value: {self.value}";
+
 class Deposit:
     def __init__(self):
         value = None;
+
+    def __str__(self):
+        return f"Deposit Object - Value: {self.value}";
 
 class Exit:
     def __init__(self):
         value = None;
 
+    def __str__(self):
+        return f"Exit Object";
+
 class Enter:
     def __init__(self):
         accNumber = None;
+
+    def __str__(self):
+        return f"Enter Object - Value: {self.accNumber}";
 
 ##################################
 ##### TOKEN ENUMERATOR CLASS #####
@@ -285,6 +311,15 @@ class TokenType:
         self.type = type;
         self.value = value;
         self.position = position;
+
+    def getType(self):
+        return self.type;
+
+    def getValue(self):
+        return self.value;
+
+    def getPosition(self):
+        return self.position;
     
 ########################
 ##### AST NODE #########
@@ -302,15 +337,23 @@ class ASTNode:
     def clearStatementList(self):
         self.statementList.clear();
 
+    def printStatementList(self):
+        for statement in self.statementList:
+            print(statement.__str__());
+            
+
 ########################
 ##### INTERPRETER ######
 ########################
 # Runs preinput and user input
 class Interpreter:
+    
+
     # Run program
-    def run(preInput):
+    def run(self, preInput):
         # Create bank program
         bank = Program();
+        bank.clearAccounts();
         userInput = [];
         inProgram = True;
         selAccount = None;
@@ -343,6 +386,7 @@ class Interpreter:
                 print("Unable to process input");
             # Clear user input list
             userInput.clear();
+        return bank;
     
     # Evaluate AST Structure
     def Evaluate(bank, code, selAccount):
@@ -382,7 +426,6 @@ class Interpreter:
             # Withdraw money from current account
             elif type(line) is Withdraw:
                 selAccount.withdraw(line.value);
-                print(f"${line.value} successfully withdrawn from {selAccount.getFirstName()}'s account.");
             # Exit current account or exit program
             elif type(line) is Exit:
                 if selAccount != None:
@@ -391,6 +434,10 @@ class Interpreter:
                 else:
                     return False, selAccount;
         return True, selAccount;
+
+    # For debugging purposes, returns bank with all accounts
+    def getBank(self):
+        return self.testBank;
                 
                 
             
@@ -409,11 +456,17 @@ class Program:
                 selected = account;
         return selected;
 
+    # Get list of accounts
     def getAccountList(self):
         return self.accounts;
 
+    # Add account to list
     def addAccount(self, account):
         self.accounts.append(account);
+
+    # Remove all accounts
+    def clearAccounts(self):
+        self.accounts = [];
         
 # Run main program
 if __name__ == "__main__":
